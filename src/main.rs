@@ -10,10 +10,12 @@ use rand::{Rng, SeedableRng};
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
 
+#[derive(Clone, Copy)]
 struct Tile {
     wall: bool,
 }
 
+#[derive(Clone, Copy)]
 enum Direction {
     East,
     North,
@@ -21,6 +23,7 @@ enum Direction {
     South,
 }
 
+#[derive(Clone, Copy)]
 struct Connection {
     direction: Direction,
     pos: u32,
@@ -37,6 +40,7 @@ impl Connection {
     }
 }
 
+#[derive(Clone)]
 struct Chunk {
     from: Connection,
     to: Connection,
@@ -81,32 +85,30 @@ struct Racetrack {
     chunk_size: usize,
     focus: Vector,
     max_angle: f64,
-    chunks: [[Chunk; 3]; 3],
+    chunks: [[Chunk; 5]; 5],
 }
 
 impl Racetrack {
     pub fn new(chunk_size: usize, seed: u64) -> Racetrack {
+        let chunk = Chunk::new(chunk_size);
+        let row = [
+            chunk.clone(),
+            chunk.clone(),
+            chunk.clone(),
+            chunk.clone(),
+            chunk.clone(),
+        ];
         Racetrack {
             rng: Pcg32::seed_from_u64(seed),
             max_angle: 0.0,
             chunk_size,
             focus: Vector::ORIGIN,
             chunks: [
-                [
-                    Chunk::new(chunk_size),
-                    Chunk::new(chunk_size),
-                    Chunk::new(chunk_size),
-                ],
-                [
-                    Chunk::new(chunk_size),
-                    Chunk::new(chunk_size),
-                    Chunk::new(chunk_size),
-                ],
-                [
-                    Chunk::new(chunk_size),
-                    Chunk::new(chunk_size),
-                    Chunk::new(chunk_size),
-                ],
+                row.clone(),
+                row.clone(),
+                row.clone(),
+                row.clone(),
+                row.clone(),
             ],
         }
     }
