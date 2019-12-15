@@ -7,7 +7,9 @@ impl Rng {
     pub const RAND_MAX: u64 = MODULUS - 1;
 
     pub fn with_seed(seed: u64) -> Rng {
-        Rng { state: seed }
+        Rng {
+            state: seed % MODULUS,
+        }
     }
 
     pub fn forward(&mut self) -> u64 {
@@ -50,5 +52,11 @@ mod tests {
     #[test]
     fn inverse_multiplier_is_correct() {
         assert!(MULTIPLIER * INVERSE_MULTIPLIER % MODULUS == 1);
+    }
+
+    #[test]
+    fn no_overflow() {
+        let mut rng = Rng::with_seed(17700000001);
+        rng.forward();
     }
 }
