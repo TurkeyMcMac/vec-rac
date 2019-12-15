@@ -1,11 +1,8 @@
 mod vector;
 use vector::Vector;
 
-extern crate rand_pcg;
-use rand_pcg::Pcg32;
-
-extern crate rand;
-use rand::{Rng, SeedableRng};
+mod rng;
+use rng::Rng;
 
 use std::fs::File;
 use std::io::{self, BufRead, BufReader};
@@ -81,7 +78,7 @@ impl Chunk {
 }
 
 struct Racetrack {
-    rng: Pcg32,
+    rng: Rng,
     chunk_size: usize,
     focus: Vector,
     max_angle: f64,
@@ -99,7 +96,7 @@ impl Racetrack {
             chunk.clone(),
         ];
         Racetrack {
-            rng: Pcg32::seed_from_u64(seed),
+            rng: Rng::with_seed(seed),
             max_angle: 0.0,
             chunk_size,
             focus: Vector::ORIGIN,

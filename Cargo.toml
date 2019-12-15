@@ -5,9 +5,3 @@ authors = ["Jude Melton-Houghton <jwmhjwmh@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
-[dependencies]
-rand_pcg = "0.2.1"
-[dependencies.rand]
-	version = "0.7.2"
-	default-features = false
