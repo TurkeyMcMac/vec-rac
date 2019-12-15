@@ -88,8 +88,8 @@ impl Iterator for SegmentPts {
             Some(mem::replace(
                 &mut self.from,
                 Vector {
-                    x: (self.x + 0.5) as i32,
-                    y: (self.y + 0.5) as i32,
+                    x: f64::round(self.x) as i32,
+                    y: f64::round(self.y) as i32,
                 },
             ))
         }
