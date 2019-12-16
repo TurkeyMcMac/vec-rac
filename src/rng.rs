@@ -1,3 +1,4 @@
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Debug)]
 pub struct Rng {
     state: u64,
 }
