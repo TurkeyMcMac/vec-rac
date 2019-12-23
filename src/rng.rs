@@ -13,15 +13,17 @@ impl Rng {
         }
     }
 
+    // NOTE: I'm just hoping the wrapping arithmetic doesn't interfere with the math!
+
     pub fn forward(&mut self) -> u64 {
         let here = self.state;
-        self.state = (MULTIPLIER * self.state + INCREMENT) % MODULUS;
+        self.state = MULTIPLIER.wrapping_mul(self.state).wrapping_add(INCREMENT) % MODULUS;
         here
     }
 
     pub fn backward(&mut self) -> u64 {
         // From https://stackoverflow.com/a/29585823/11815766
-        self.state = INVERSE_MULTIPLIER * (self.state - INCREMENT) % MODULUS;
+        self.state = INVERSE_MULTIPLIER.wrapping_mul(self.state.wrapping_sub(INCREMENT)) % MODULUS;
         self.state
     }
 }
@@ -40,6 +42,8 @@ mod tests {
     #[test]
     fn rng_goes_both_ways() {
         let mut rng = Rng::with_seed(12304);
+        rng.backward();
+        rng.backward();
         let forward = std::iter::repeat_with(|| rng.forward())
             .take(5)
             .collect::<Vec<_>>();
