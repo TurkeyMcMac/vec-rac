@@ -3,12 +3,11 @@ mod racetrack;
 mod rng;
 mod vector;
 
-use vector::Vector;
 use racetrack::Racetrack;
 use std::env;
 use std::io;
 use std::str::FromStr;
-
+use vector::Vector;
 
 fn main() {
     let mut builder = Racetrack::builder();
