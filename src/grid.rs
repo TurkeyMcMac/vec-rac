@@ -72,19 +72,3 @@ impl Grid {
         buf
     }
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn print() {
-        let mut grid = Grid::new(41, 31);
-        if let Some(cell) = grid.v_get_mut(Vector::ORIGIN) {
-            *cell = true;
-        }
-        grid.scroll(Vector::new(3, -10));
-        print!("{}", grid.stringify('#', '.'));
-        assert!(false);
-    }
-}
