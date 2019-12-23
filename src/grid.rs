@@ -1,6 +1,3 @@
-use std::cmp;
-use std::iter;
-
 use crate::vector::Vector;
 
 pub struct Grid {

@@ -2,10 +2,8 @@ use crate::grid::Grid;
 use crate::rng::Rng;
 use crate::vector::{self, Vector};
 
-use std::cmp;
 use std::collections::HashSet;
-use std::iter;
-use std::time::{Duration, SystemTime};
+use std::time::SystemTime;
 
 pub struct Racetrack {
     grid: Grid,
@@ -13,7 +11,6 @@ pub struct Racetrack {
     path_pos: Vector,
     path_radius: i32,
     carving_ring: Box<[Vector]>,
-    beside: Vec<i32>,
     view_dist: i32,
     rng: Rng,
 }
@@ -81,7 +78,6 @@ impl Racetrack {
             path_pos: Vector::ORIGIN,
             path_radius,
             carving_ring: make_ring(path_radius).into_boxed_slice(),
-            beside: Vec::new(),
             view_dist,
             rng: Rng::with_seed(seed),
         }
