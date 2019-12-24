@@ -8,6 +8,7 @@ use std::iter;
 // XXX: Change repeat_array when you change this.
 const N_MID_WEIGHTS: usize = 32;
 
+#[derive(Clone, PartialEq, PartialOrd)]
 pub struct Brain {
     view_dist: i32,
     mid_weights: [Vec<f32>; N_MID_WEIGHTS],
