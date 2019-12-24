@@ -22,15 +22,15 @@ impl Brain {
         Brain {
             view_dist,
             mid_weights: repeat_array(|| {
-                iter::repeat_with(|| random_weight(rng))
+                iter::repeat_with(|| random_f32(rng))
                     .take(n_inputs)
                     .collect()
             }),
             out_weights: [
-                repeat_array(|| random_weight(rng)),
-                repeat_array(|| random_weight(rng)),
-                repeat_array(|| random_weight(rng)),
-                repeat_array(|| random_weight(rng)),
+                repeat_array(|| random_f32(rng)),
+                repeat_array(|| random_f32(rng)),
+                repeat_array(|| random_f32(rng)),
+                repeat_array(|| random_f32(rng)),
             ],
         }
     }
@@ -96,7 +96,7 @@ fn pos_round_up_2(num: i32) -> i32 {
     (num + 1) & !1
 }
 
-fn random_weight(rng: &mut Rng) -> f32 {
+fn random_f32(rng: &mut Rng) -> f32 {
     rng.forward() as f32 / Rng::RAND_MAX as f32 * 2.0 - 1.0
 }
 
