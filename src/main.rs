@@ -66,7 +66,7 @@ fn test_brain(brain: &Brain, track: &Racetrack) -> i32 {
     let mut vel = Vector::new(0, 1);
     let mut pos = Vector::ORIGIN;
     track.translate(Vector::ORIGIN);
-    'tick_loop: for tick in 0..1000 {
+    'tick_loop: loop {
         vel = vel + brain.compute_accel(vel, &track);
         for pt in Vector::ORIGIN.segment_pts(vel) {
             if let Some(false) = track.get(pt) {
@@ -107,7 +107,7 @@ fn show_brain(brain: &Brain, track: &Racetrack) {
     let mut vel = Vector::new(0, 1);
     let mut pos = Vector::ORIGIN;
     track.translate(Vector::ORIGIN);
-    'tick_loop: for tick in 0..1000 {
+    'tick_loop: loop {
         vel = vel + brain.compute_accel(vel, &track);
         for pt in Vector::ORIGIN.segment_pts(vel) {
             if let Some(false) = track.get(pt) {
