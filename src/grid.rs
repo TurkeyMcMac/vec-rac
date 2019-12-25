@@ -1,5 +1,6 @@
 use crate::vector::Vector;
 
+#[derive(Clone, PartialEq, PartialOrd, Debug)]
 pub struct Grid {
     width: usize,
     height: usize,

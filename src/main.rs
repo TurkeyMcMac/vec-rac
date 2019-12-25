@@ -9,6 +9,7 @@ use racetrack::Racetrack;
 use rng::Rng;
 use std::env;
 use std::io;
+use std::iter;
 use std::str::FromStr;
 use std::thread;
 use std::time::{Duration, SystemTime};
@@ -26,18 +27,99 @@ fn main() {
                 .unwrap_or(0)
         });
     let mut rng = Rng::with_seed(seed + 17);
-    let mut rt = Racetrack::builder()
+    let rt = Racetrack::builder()
         .view_dist(20)
         .path_radius(4)
         .seed(seed)
         .build();
     let mut vel = Vector::ORIGIN;
-    let brain = Brain::random(20, &mut rng);
+    let mut brains = iter::repeat_with(|| Brain::random(20, &mut rng))
+        .take(10)
+        .collect::<Vec<_>>();
+    let mut max_max_score = 0;
     loop {
-        vel = vel + brain.compute_accel(vel, &rt);
-        rt.translate(vel);
-        print!("\x1b[H\x1b[J{}", rt.stringify('#', '.'));
-        println!("vel: {}", vel);
-        thread::sleep(Duration::from_millis(100));
+        let mut results = brains
+            .iter()
+            .map(|brain| (brain.clone(), test_brain(brain, &rt)))
+            .collect::<Vec<_>>();
+        results.sort_by(|a, b| b.1.cmp(&a.1));
+        results.truncate(5);
+        let max_score = results[0].1;
+        if max_score > max_max_score {
+            max_max_score = max_score;
+            show_brain(&results[0].0, &rt);
+            print!("\x1b[H\x1b[JMax score: {}", max_max_score);
+        }
+        brains.clear();
+        for (brain, _) in results.into_iter() {
+            brains.push(brain.mutant(&mut rng, 0.05));
+            brains.push(brain);
+        }
     }
+}
+
+fn test_brain(brain: &Brain, track: &Racetrack) -> i32 {
+    let mut track = track.clone();
+    let mut vel = Vector::new(0, 1);
+    let mut pos = Vector::ORIGIN;
+    track.translate(Vector::ORIGIN);
+    'tick_loop: for tick in 0..1000 {
+        vel = vel + brain.compute_accel(vel, &track);
+        for pt in Vector::ORIGIN.segment_pts(vel) {
+            if let Some(false) = track.get(pt) {
+                pos = pos + pt;
+                break 'tick_loop;
+            }
+        }
+        pos = pos + vel;
+        track.translate(vel);
+        if let Some(false) = track.get(Vector::ORIGIN) {
+            break 'tick_loop;
+        }
+    }
+    pos.y
+}
+
+fn draw_track(track: &Racetrack) {
+    let view_dist = track.view_dist();
+    print!("\x1b[H\x1b[J");
+    for y in (-view_dist..=view_dist).rev() {
+        for x in -view_dist..=view_dist {
+            let pos = Vector::new(x, y);
+            let c = if pos == Vector::ORIGIN {
+                '@'
+            } else if let Some(true) = track.get(pos) {
+                '.'
+            } else {
+                ' '
+            };
+            print!("{}", c);
+        }
+        print!("\n");
+    }
+}
+
+fn show_brain(brain: &Brain, track: &Racetrack) {
+    let mut track = track.clone();
+    let mut vel = Vector::new(0, 1);
+    let mut pos = Vector::ORIGIN;
+    track.translate(Vector::ORIGIN);
+    'tick_loop: for tick in 0..1000 {
+        vel = vel + brain.compute_accel(vel, &track);
+        for pt in Vector::ORIGIN.segment_pts(vel) {
+            if let Some(false) = track.get(pt) {
+                track.translate(pt);
+                draw_track(&track);
+                break 'tick_loop;
+            }
+        }
+        pos = pos + vel;
+        track.translate(vel);
+        draw_track(&track);
+        thread::sleep(Duration::from_millis(50));
+        if let Some(false) = track.get(Vector::ORIGIN) {
+            break 'tick_loop;
+        }
+    }
+    thread::sleep(Duration::from_millis(150));
 }

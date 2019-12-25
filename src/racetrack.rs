@@ -5,6 +5,7 @@ use crate::vector::{self, Vector};
 use std::collections::HashSet;
 use std::time::SystemTime;
 
+#[derive(Clone, PartialEq, PartialOrd, Debug)]
 pub struct Racetrack {
     grid: Grid,
     path_vel_x: i32,
@@ -116,6 +117,10 @@ impl Racetrack {
 
     pub fn get(&self, pos: Vector) -> Option<bool> {
         self.grid.v_get(pos)
+    }
+
+    pub fn view_dist(&self) -> i32 {
+        self.view_dist
     }
 
     pub fn stringify(&self, track: char, wall: char) -> String {

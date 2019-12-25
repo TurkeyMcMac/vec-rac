@@ -36,6 +36,22 @@ impl Brain {
         }
     }
 
+    pub fn mutant(&self, rng: &mut Rng, amount: f64) -> Brain {
+        let amount = amount as f32;
+        let mut mutant = self.clone();
+        for neuron in mutant.mid_weights.iter_mut() {
+            for weight in neuron {
+                *weight += random_f32(rng) * amount;
+            }
+        }
+        for neuron in mutant.out_weights.iter_mut() {
+            for weight in neuron {
+                *weight += random_f32(rng) * amount;
+            }
+        }
+        mutant
+    }
+
     pub fn compute_accel(&self, vel: Vector, track: &Racetrack) -> Vector {
         let mut mid_iter = self.mid_weights.iter();
         let mid_out = repeat_array(|| {
