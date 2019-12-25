@@ -1,3 +1,5 @@
+extern crate rayon;
+
 mod brain;
 mod grid;
 mod racetrack;
@@ -6,6 +8,7 @@ mod vector;
 
 use brain::Brain;
 use racetrack::Racetrack;
+use rayon::prelude::*;
 use rng::Rng;
 use std::env;
 use std::io;
@@ -39,7 +42,7 @@ fn main() {
     let mut max_max_score = 0;
     loop {
         let mut results = brains
-            .iter()
+            .par_iter()
             .map(|brain| (brain.clone(), test_brain(brain, &rt)))
             .collect::<Vec<_>>();
         results.sort_by(|a, b| b.1.cmp(&a.1));
