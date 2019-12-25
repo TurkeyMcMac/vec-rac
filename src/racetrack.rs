@@ -96,8 +96,10 @@ impl Racetrack {
             let from = self.path_pos;
             self.move_path_north();
             for center in from.segment_pts(self.path_pos) {
-                for &pt in self.carving_ring.iter() {
-                    self.grid.v_get_mut(center + pt).map(|c| *c = true);
+                if i32::abs(center.x) < self.view_dist + self.path_radius {
+                    for &pt in self.carving_ring.iter() {
+                        self.grid.v_get_mut(center + pt).map(|c| *c = true);
+                    }
                 }
             }
         }
