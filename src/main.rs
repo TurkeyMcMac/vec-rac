@@ -44,7 +44,12 @@ fn main() {
                 .map(|d| d.as_secs())
                 .unwrap_or(0)
         });
-    let population = matches.opt_str("population").and_then(|arg| usize::from_str(&arg).ok()).unwrap_or(10);
+    let mut population = matches.opt_str("population").and_then(|arg| usize::from_str(&arg).ok()).unwrap_or(10);
+    if population == 0 {
+        population = 2;
+    } else if population & 1 == 1 {
+        population += 1;
+    }
     let mutation = matches.opt_str("mutation").and_then(|arg| f64::from_str(&arg).ok()).unwrap_or(0.05);
     let mut rng = Rng::with_seed(seed + 17);
     let rt = Racetrack::builder()
