@@ -1,4 +1,5 @@
 extern crate rayon;
+extern crate getopts;
 
 mod brain;
 mod grid;
@@ -7,6 +8,7 @@ mod rng;
 mod vector;
 
 use brain::Brain;
+use getopts::Options;
 use racetrack::Racetrack;
 use rayon::prelude::*;
 use rng::Rng;
@@ -18,10 +20,23 @@ use std::thread;
 use std::time::{Duration, SystemTime};
 use vector::Vector;
 
+fn options() -> Options {
+    let mut opts = Options::new();
+    opts.optopt("", "view-dist", "Set track view square radius, a positive integer", "DISTANCE");
+    opts.optopt("", "path-radius", "Set track path radius, a positive integer", "RADIUS");
+    opts.optopt("", "seed", "Set random seed to use, a positive integer", "SEED");
+    opts.optopt("", "population", "Set genome population size, a positive integer", "SIZE");
+    opts.optopt("", "mutation", "Set mutation rate, a positive decimal", "RATE");
+    opts.optflag("h", "help", "Print this help information");
+    opts
+}
+
 fn main() {
-    let seed = env::args()
-        .nth(1)
-        .and_then(|arg| u64::from_str(&arg).ok())
+    let opts = options();
+    let matches = opts.parse(env::args()).unwrap();
+    let view_dist = matches.opt_str("view-dist").and_then(|arg| i32::from_str(&arg).ok()).unwrap_or(20);
+    let path_radius = matches.opt_str("path-radius").and_then(|arg| i32::from_str(&arg).ok()).unwrap_or(4);
+    let seed = matches.opt_str("seed").and_then(|arg| u64::from_str(&arg).ok())
         .unwrap_or_else(|| {
             // Seed the RNG from the system time now.
             SystemTime::now()
@@ -29,15 +44,17 @@ fn main() {
                 .map(|d| d.as_secs())
                 .unwrap_or(0)
         });
+    let population = matches.opt_str("population").and_then(|arg| usize::from_str(&arg).ok()).unwrap_or(10);
+    let mutation = matches.opt_str("mutation").and_then(|arg| f64::from_str(&arg).ok()).unwrap_or(0.05);
     let mut rng = Rng::with_seed(seed + 17);
     let rt = Racetrack::builder()
-        .view_dist(20)
-        .path_radius(4)
+        .view_dist(i32::max(20, view_dist))
+        .path_radius(path_radius)
         .seed(seed)
         .build();
     let mut vel = Vector::ORIGIN;
-    let mut brains = iter::repeat_with(|| Brain::random(20, &mut rng))
-        .take(10)
+    let mut brains = iter::repeat_with(|| Brain::random(view_dist, &mut rng))
+        .take(population)
         .collect::<Vec<_>>();
     let mut max_max_score = 0;
     loop {
@@ -46,7 +63,7 @@ fn main() {
             .map(|brain| (brain.clone(), test_brain(brain, &rt, false)))
             .collect::<Vec<_>>();
         results.sort_by(|a, b| b.1.cmp(&a.1));
-        results.truncate(5);
+        results.truncate(population / 2);
         let max_score = results[0].1;
         if max_score > max_max_score {
             print!("\x07");
@@ -55,7 +72,7 @@ fn main() {
         }
         brains.clear();
         for (brain, _) in results.into_iter() {
-            brains.push(brain.mutant(&mut rng, 0.05));
+            brains.push(brain.mutant(&mut rng, mutation));
             brains.push(brain);
         }
     }
