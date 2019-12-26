@@ -43,7 +43,7 @@ fn main() {
     loop {
         let mut results = brains
             .par_iter()
-            .map(|brain| (brain.clone(), test_brain(brain, &rt)))
+            .map(|brain| (brain.clone(), test_brain(brain, &rt, false)))
             .collect::<Vec<_>>();
         results.sort_by(|a, b| b.1.cmp(&a.1));
         results.truncate(5);
@@ -51,7 +51,7 @@ fn main() {
         if max_score > max_max_score {
             print!("\x07");
             max_max_score = max_score;
-            show_brain(&results[0].0, &rt);
+            test_brain(&results[0].0, &rt, true);
         }
         brains.clear();
         for (brain, _) in results.into_iter() {
@@ -59,38 +59,6 @@ fn main() {
             brains.push(brain);
         }
     }
-}
-
-fn test_brain(brain: &Brain, track: &Racetrack) -> i32 {
-    let mut track = track.clone();
-    let mut vel = Vector::new(0, 1);
-    let mut pos = Vector::ORIGIN;
-    let mut max_score = 0;
-    let mut since_improved = 0;
-    track.translate(Vector::ORIGIN);
-    'tick_loop: loop {
-        vel = vel + brain.compute_accel(vel, &track);
-        for pt in Vector::ORIGIN.segment_pts(vel) {
-            if let Some(false) = track.get(pt) {
-                pos = pos + pt;
-                break 'tick_loop;
-            }
-        }
-        pos = pos + vel;
-        if pos.y > max_score {
-            max_score = pos.y;
-            since_improved = 0;
-        } else if since_improved > 50 {
-            break 'tick_loop;
-        } else {
-            since_improved += 1;
-        }
-        track.translate(vel);
-        if let Some(false) = track.get(Vector::ORIGIN) {
-            break 'tick_loop;
-        }
-    }
-    pos.y
 }
 
 fn draw_track(track: &Racetrack) {
@@ -112,7 +80,7 @@ fn draw_track(track: &Racetrack) {
     }
 }
 
-fn show_brain(brain: &Brain, track: &Racetrack) {
+fn test_brain(brain: &Brain, track: &Racetrack, show: bool) -> i32 {
     let mut track = track.clone();
     let mut vel = Vector::new(0, 1);
     let mut pos = Vector::ORIGIN;
@@ -123,7 +91,11 @@ fn show_brain(brain: &Brain, track: &Racetrack) {
         vel = vel + brain.compute_accel(vel, &track);
         for pt in Vector::ORIGIN.segment_pts(vel) {
             if let Some(false) = track.get(pt) {
-                track.translate(pt);
+                if show {
+                    track.translate(pt);
+                } else {
+                    pos = pos + pt;
+                }
                 break 'tick_loop;
             }
         }
@@ -137,14 +109,19 @@ fn show_brain(brain: &Brain, track: &Racetrack) {
             since_improved += 1;
         }
         track.translate(vel);
-        draw_track(&track);
-        println!("score: {}  velocity: {}", pos.y, vel);
-        thread::sleep(Duration::from_millis(50));
+        if show {
+            draw_track(&track);
+            println!("score: {}  velocity: {}", pos.y, vel);
+            thread::sleep(Duration::from_millis(50));
+        }
         if let Some(false) = track.get(Vector::ORIGIN) {
             break 'tick_loop;
         }
     }
-    draw_track(&track);
-    println!("max score: {}", pos.y);
-    thread::sleep(Duration::from_millis(150));
+    if show {
+        draw_track(&track);
+        println!("max score: {}", pos.y);
+        thread::sleep(Duration::from_millis(150));
+    }
+    pos.y
 }
