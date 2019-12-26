@@ -1,5 +1,5 @@
-extern crate rayon;
 extern crate getopts;
+extern crate rayon;
 
 mod brain;
 mod grid;
@@ -22,11 +22,36 @@ use vector::Vector;
 
 fn options() -> Options {
     let mut opts = Options::new();
-    opts.optopt("", "view-dist", "Set track view square radius, a positive integer", "DISTANCE");
-    opts.optopt("", "path-radius", "Set track path radius, a positive integer", "RADIUS");
-    opts.optopt("", "seed", "Set random seed to use, a positive integer", "SEED");
-    opts.optopt("", "population", "Set genome population size, a positive integer", "SIZE");
-    opts.optopt("", "mutation", "Set mutation rate, a positive decimal", "RATE");
+    opts.optopt(
+        "",
+        "view-dist",
+        "Set track view square radius, a positive integer",
+        "DISTANCE",
+    );
+    opts.optopt(
+        "",
+        "path-radius",
+        "Set track path radius, a positive integer",
+        "RADIUS",
+    );
+    opts.optopt(
+        "",
+        "seed",
+        "Set random seed to use, a positive integer",
+        "SEED",
+    );
+    opts.optopt(
+        "",
+        "population",
+        "Set genome population size, a positive integer",
+        "SIZE",
+    );
+    opts.optopt(
+        "",
+        "mutation",
+        "Set mutation rate, a positive decimal",
+        "RATE",
+    );
     opts.optflag("h", "help", "Print this help information");
     opts
 }
@@ -34,9 +59,17 @@ fn options() -> Options {
 fn main() {
     let opts = options();
     let matches = opts.parse(env::args()).unwrap();
-    let view_dist = matches.opt_str("view-dist").and_then(|arg| i32::from_str(&arg).ok()).unwrap_or(20);
-    let path_radius = matches.opt_str("path-radius").and_then(|arg| i32::from_str(&arg).ok()).unwrap_or(4);
-    let seed = matches.opt_str("seed").and_then(|arg| u64::from_str(&arg).ok())
+    let view_dist = matches
+        .opt_str("view-dist")
+        .and_then(|arg| i32::from_str(&arg).ok())
+        .unwrap_or(20);
+    let path_radius = matches
+        .opt_str("path-radius")
+        .and_then(|arg| i32::from_str(&arg).ok())
+        .unwrap_or(4);
+    let seed = matches
+        .opt_str("seed")
+        .and_then(|arg| u64::from_str(&arg).ok())
         .unwrap_or_else(|| {
             // Seed the RNG from the system time now.
             SystemTime::now()
@@ -44,13 +77,19 @@ fn main() {
                 .map(|d| d.as_secs())
                 .unwrap_or(0)
         });
-    let mut population = matches.opt_str("population").and_then(|arg| usize::from_str(&arg).ok()).unwrap_or(10);
+    let mut population = matches
+        .opt_str("population")
+        .and_then(|arg| usize::from_str(&arg).ok())
+        .unwrap_or(10);
     if population == 0 {
         population = 2;
     } else if population & 1 == 1 {
         population += 1;
     }
-    let mutation = matches.opt_str("mutation").and_then(|arg| f64::from_str(&arg).ok()).unwrap_or(0.05);
+    let mutation = matches
+        .opt_str("mutation")
+        .and_then(|arg| f64::from_str(&arg).ok())
+        .unwrap_or(0.05);
     let mut rng = Rng::with_seed(seed + 17);
     let rt = Racetrack::builder()
         .view_dist(i32::max(20, view_dist))
