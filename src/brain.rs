@@ -12,7 +12,7 @@ const N_MID_WEIGHTS: usize = 32;
 pub struct Brain {
     view_dist: i32,
     mid_weights: [Vec<f32>; N_MID_WEIGHTS],
-    out_weights: [[f32; N_MID_WEIGHTS]; 4],
+    out_weights: [[f32; N_MID_WEIGHTS]; 5],
 }
 
 impl Brain {
@@ -28,6 +28,7 @@ impl Brain {
                     .collect()
             }),
             out_weights: [
+                repeat_array(|| random_f32(rng)),
                 repeat_array(|| random_f32(rng)),
                 repeat_array(|| random_f32(rng)),
                 repeat_array(|| random_f32(rng)),
@@ -89,6 +90,7 @@ impl Brain {
             compute_out(&self.out_weights[1], &mid_out),
             compute_out(&self.out_weights[2], &mid_out),
             compute_out(&self.out_weights[3], &mid_out),
+            compute_out(&self.out_weights[4], &mid_out),
         ]
         .into_iter();
         let mut max = out.next().unwrap();
@@ -104,6 +106,7 @@ impl Brain {
             1 => Vector::new(0, 1),
             2 => Vector::new(-1, 0),
             3 => Vector::new(0, -1),
+            4 => Vector::ORIGIN,
             _ => unreachable!(),
         }
     }
