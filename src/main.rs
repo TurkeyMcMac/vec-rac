@@ -49,9 +49,9 @@ fn main() {
         results.truncate(5);
         let max_score = results[0].1;
         if max_score > max_max_score {
+            print!("\x07");
             max_max_score = max_score;
             show_brain(&results[0].0, &rt);
-            print!("\x1b[H\x1b[JMax score: {}", max_max_score);
         }
         brains.clear();
         for (brain, _) in results.into_iter() {
