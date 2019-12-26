@@ -65,6 +65,8 @@ fn test_brain(brain: &Brain, track: &Racetrack) -> i32 {
     let mut track = track.clone();
     let mut vel = Vector::new(0, 1);
     let mut pos = Vector::ORIGIN;
+    let mut max_score = 0;
+    let mut since_improved = 0;
     track.translate(Vector::ORIGIN);
     'tick_loop: loop {
         vel = vel + brain.compute_accel(vel, &track);
@@ -75,6 +77,14 @@ fn test_brain(brain: &Brain, track: &Racetrack) -> i32 {
             }
         }
         pos = pos + vel;
+        if pos.y > max_score {
+            max_score = pos.y;
+            since_improved = 0;
+        } else if since_improved > 50 {
+            break 'tick_loop;
+        } else {
+            since_improved += 1;
+        }
         track.translate(vel);
         if let Some(false) = track.get(Vector::ORIGIN) {
             break 'tick_loop;
@@ -106,23 +116,35 @@ fn show_brain(brain: &Brain, track: &Racetrack) {
     let mut track = track.clone();
     let mut vel = Vector::new(0, 1);
     let mut pos = Vector::ORIGIN;
+    let mut max_score = 0;
+    let mut since_improved = 0;
     track.translate(Vector::ORIGIN);
     'tick_loop: loop {
         vel = vel + brain.compute_accel(vel, &track);
         for pt in Vector::ORIGIN.segment_pts(vel) {
             if let Some(false) = track.get(pt) {
                 track.translate(pt);
-                draw_track(&track);
                 break 'tick_loop;
             }
         }
         pos = pos + vel;
+        if pos.y > max_score {
+            max_score = pos.y;
+            since_improved = 0;
+        } else if since_improved > 50 {
+            break 'tick_loop;
+        } else {
+            since_improved += 1;
+        }
         track.translate(vel);
         draw_track(&track);
+        println!("score: {}  velocity: {}", pos.y, vel);
         thread::sleep(Duration::from_millis(50));
         if let Some(false) = track.get(Vector::ORIGIN) {
             break 'tick_loop;
         }
     }
+    draw_track(&track);
+    println!("max score: {}", pos.y);
     thread::sleep(Duration::from_millis(150));
 }
