@@ -16,6 +16,7 @@ pub struct Racetrack {
     rng: Rng,
 }
 
+#[derive(Clone, PartialEq, PartialOrd, Debug)]
 pub struct RacetrackBuilder {
     view_dist: Option<i32>,
     path_radius: Option<i32>,

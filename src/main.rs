@@ -25,7 +25,13 @@ fn options() -> Options {
     opts.optopt(
         "",
         "view-dist",
-        "Set track view square radius, a positive integer",
+        "Set how far a racer can see, a positive integer",
+        "DISTANCE",
+    );
+    opts.optopt(
+        "",
+        "display-dist",
+        "Set how far away the track is displayed, a positive integer",
         "DISTANCE",
     );
     opts.optopt(
@@ -61,8 +67,17 @@ fn main() {
     let matches = opts.parse(env::args()).unwrap();
     let view_dist = matches
         .opt_str("view-dist")
-        .and_then(|arg| i32::from_str(&arg).ok())
-        .unwrap_or(20);
+        .and_then(|arg| i32::from_str(&arg).ok());
+    let display_dist = matches
+        .opt_str("display-dist")
+        .and_then(|arg| i32::from_str(&arg).ok());
+    let (view_dist, display_dist) = match (view_dist, display_dist) {
+        (Some(v), Some(d)) => (v, i32::max(v, d)),
+        (Some(v), None) => (v, v),
+        (None, Some(d)) => (d, d),
+        (None, None) => (20, 20),
+    };
+    println!("v {} d {}", view_dist, display_dist);
     let path_radius = matches
         .opt_str("path-radius")
         .and_then(|arg| i32::from_str(&arg).ok())
@@ -91,11 +106,9 @@ fn main() {
         .and_then(|arg| f64::from_str(&arg).ok())
         .unwrap_or(0.05);
     let mut rng = Rng::with_seed(seed + 17);
-    let rt = Racetrack::builder()
-        .view_dist(i32::max(20, view_dist))
-        .path_radius(path_radius)
-        .seed(seed)
-        .build();
+    let track_builder = Racetrack::builder().path_radius(path_radius).seed(seed);
+    let track = track_builder.clone().view_dist(view_dist).build();
+    let displayed_track = track_builder.view_dist(display_dist).build();
     let mut vel = Vector::ORIGIN;
     let mut brains = iter::repeat_with(|| Brain::random(view_dist, &mut rng))
         .take(population)
@@ -104,7 +117,7 @@ fn main() {
     loop {
         let mut results = brains
             .par_iter()
-            .map(|brain| (brain.clone(), test_brain(brain, &rt, false)))
+            .map(|brain| (brain.clone(), test_brain(brain, &track, false)))
             .collect::<Vec<_>>();
         results.sort_by(|a, b| b.1.cmp(&a.1));
         results.truncate(population / 2);
@@ -112,7 +125,7 @@ fn main() {
         if max_score > max_max_score {
             print!("\x07");
             max_max_score = max_score;
-            test_brain(&results[0].0, &rt, true);
+            test_brain(&results[0].0, &displayed_track, true);
         }
         brains.clear();
         for (brain, _) in results.into_iter() {
