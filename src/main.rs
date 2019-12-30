@@ -141,7 +141,9 @@ fn main() {
             .par_iter()
             .map(|brain| (brain.clone(), test_brain(brain, &track, false)))
             .collect::<Vec<_>>();
-        results.sort_by(|(_, (score_a, time_a)), (_, (score_b, time_b))| score_b.cmp(&score_a).then(time_b.cmp(&time_a)));
+        results.sort_by(|(_, (score_a, time_a)), (_, (score_b, time_b))| {
+            score_b.cmp(&score_a).then(time_b.cmp(&time_a))
+        });
         results.truncate(population / 2);
         let max_score = (results[0].1).0;
         if max_score > max_max_score {
