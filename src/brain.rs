@@ -1,8 +1,6 @@
 use crate::racetrack::Racetrack;
 use crate::rng::Rng;
 use crate::vector::Vector;
-use std::cmp;
-use std::convert::TryInto;
 use std::iter;
 
 // XXX: Change repeat_array when you change this.

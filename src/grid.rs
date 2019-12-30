@@ -21,14 +21,6 @@ impl Grid {
         }
     }
 
-    pub fn width(&self) -> usize {
-        self.width
-    }
-
-    pub fn height(&self) -> usize {
-        self.height
-    }
-
     pub fn get(&self, x: usize, y: usize) -> Option<bool> {
         if x < self.width && y < self.height {
             Some(self.grid[x + y * self.width])
@@ -59,17 +51,5 @@ impl Grid {
         for cell in self.grid.iter_mut() {
             *cell = false;
         }
-    }
-
-    pub fn stringify(&self, t: char, f: char) -> String {
-        let mut buf = String::new();
-        for y in (0..self.height).rev() {
-            for x in 0..self.width {
-                let cell = self.get(x, y).unwrap();
-                buf.push(if cell { t } else { f });
-            }
-            buf.push('\n');
-        }
-        buf
     }
 }

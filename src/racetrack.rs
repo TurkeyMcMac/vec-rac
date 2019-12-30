@@ -119,10 +119,6 @@ impl Racetrack {
     pub fn view_dist(&self) -> i32 {
         self.view_dist
     }
-
-    pub fn stringify(&self, track: char, wall: char) -> String {
-        self.grid.stringify(track, wall)
-    }
 }
 
 fn make_ring(radius: i32) -> Vec<Vector> {

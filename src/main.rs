@@ -13,7 +13,6 @@ use racetrack::Racetrack;
 use rayon::prelude::*;
 use rng::Rng;
 use std::env;
-use std::io;
 use std::iter;
 use std::str::FromStr;
 use std::thread;
@@ -112,7 +111,6 @@ fn main() {
     let track_builder = Racetrack::builder().path_radius(path_radius).seed(seed);
     let track = track_builder.clone().view_dist(view_dist).build();
     let displayed_track = track_builder.view_dist(display_dist).build();
-    let mut vel = Vector::ORIGIN;
     let mut brains = iter::repeat_with(|| Brain::random(view_dist, &mut rng))
         .take(population)
         .collect::<Vec<_>>();
