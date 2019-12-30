@@ -82,7 +82,7 @@ fn main() {
         print!("{}", print_help(&opts));
         process::exit(0);
     } else if matches.opt_present("version") {
-        println!("vec-rac version 0.0.1");
+        println!("vec-rac version 0.1.0");
         process::exit(0);
     }
     let view_dist = matches
@@ -141,9 +141,9 @@ fn main() {
             .par_iter()
             .map(|brain| (brain.clone(), test_brain(brain, &track, false)))
             .collect::<Vec<_>>();
-        results.sort_by(|a, b| b.1.cmp(&a.1));
+        results.sort_by(|(_, (score_a, time_a)), (_, (score_b, time_b))| score_b.cmp(&score_a).then(time_b.cmp(&time_a)));
         results.truncate(population / 2);
-        let max_score = results[0].1;
+        let max_score = (results[0].1).0;
         if max_score > max_max_score {
             print!("\x07");
             max_max_score = max_score;
@@ -180,9 +180,10 @@ fn draw_track(track: &Racetrack) {
     }
 }
 
-fn test_brain(brain: &Brain, track: &Racetrack, show: bool) -> i32 {
+fn test_brain(brain: &Brain, track: &Racetrack, show: bool) -> (i32, usize) {
     let mut track = track.clone();
     let mut vel = Vector::new(0, 1);
+    let mut time = 0usize;
     let mut pos = Vector::ORIGIN;
     let mut max_score = 0;
     let mut since_improved = 0;
@@ -209,6 +210,7 @@ fn test_brain(brain: &Brain, track: &Racetrack, show: bool) -> i32 {
             since_improved += 1;
         }
         track.translate(vel);
+        time = time.saturating_add(1);
         if show {
             draw_track(&track);
             println!("score: {}  velocity: {}", pos.y, vel);
@@ -223,5 +225,5 @@ fn test_brain(brain: &Brain, track: &Racetrack, show: bool) -> i32 {
         println!("max score: {}", pos.y);
         thread::sleep(Duration::from_millis(150));
     }
-    pos.y
+    (pos.y, time)
 }
