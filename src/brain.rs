@@ -16,7 +16,6 @@ pub struct Brain {
 }
 
 impl Brain {
-    pub const VERSION: u32 = 1;
     pub fn random(view_dist: i32, rng: &mut Rng) -> Brain {
         let view_dist = pos_round_up_2(i32::abs(view_dist));
         let n_inputs = ((view_dist / 2) * (view_dist / 2) * 4) as usize - 2;

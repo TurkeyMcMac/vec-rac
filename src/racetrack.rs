@@ -53,12 +53,6 @@ impl RacetrackBuilder {
 }
 
 impl Racetrack {
-    /// The version of the code. Things may work differently between versions.
-    // This must be updated whenever RNG_VERSION is updated.
-    pub const VERSION: u32 = 1;
-    // RNG_VERSION
-    const RNG_VERSION: u32 = 1;
-
     pub fn builder() -> RacetrackBuilder {
         RacetrackBuilder::new()
     }
@@ -140,18 +134,5 @@ fn make_ring(radius: i32) -> Vec<Vector> {
             .collect()
     } else {
         vector::circle_pts(radius).collect()
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn version_is_correct() {
-        assert!(
-            Racetrack::RNG_VERSION == Rng::VERSION,
-            "Update Racetrack::{VERSION, RNG_VERSION}"
-        );
     }
 }

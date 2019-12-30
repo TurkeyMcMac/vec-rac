@@ -4,7 +4,6 @@ pub struct Rng {
 }
 
 impl Rng {
-    pub const VERSION: u32 = 1;
     pub const RAND_MAX: u64 = MODULUS - 1;
 
     pub fn with_seed(seed: u64) -> Rng {
