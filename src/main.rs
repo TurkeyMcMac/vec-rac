@@ -22,6 +22,7 @@ use vector::Vector;
 
 fn options() -> Options {
     let mut opts = Options::new();
+    opts.optflag("h", "help", "Print this help information");
     opts.optopt(
         "",
         "view-dist",
@@ -58,7 +59,6 @@ fn options() -> Options {
         "Set mutation rate, a positive decimal",
         "RATE",
     );
-    opts.optflag("h", "help", "Print this help information");
     opts
 }
 
