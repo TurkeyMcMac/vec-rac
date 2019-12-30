@@ -77,7 +77,6 @@ fn main() {
         (None, Some(d)) => (d, d),
         (None, None) => (20, 20),
     };
-    println!("v {} d {}", view_dist, display_dist);
     let path_radius = matches
         .opt_str("path-radius")
         .and_then(|arg| i32::from_str(&arg).ok())
