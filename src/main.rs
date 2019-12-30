@@ -153,9 +153,13 @@ fn main() {
     }
 }
 
+fn clear_terminal() {
+    print!("\x1b[H\x1b[J");
+}
+
 fn draw_track(track: &Racetrack) {
     let view_dist = track.view_dist();
-    print!("\x1b[H\x1b[J");
+    clear_terminal();
     for y in (-view_dist..=view_dist).rev() {
         for x in -view_dist..=view_dist {
             let pos = Vector::new(x, y);
