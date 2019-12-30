@@ -23,6 +23,7 @@ use vector::Vector;
 fn options() -> Options {
     let mut opts = Options::new();
     opts.optflag("h", "help", "Print this help information");
+    opts.optflag("v", "version", "Print version information");
     opts.optopt(
         "",
         "view-dist",
@@ -79,6 +80,9 @@ fn main() {
     });
     if matches.opt_present("help") {
         print!("{}", print_help(&opts));
+        process::exit(0);
+    } else if matches.opt_present("version") {
+        println!("vec-rac version 0.0.1");
         process::exit(0);
     }
     let view_dist = matches
