@@ -22,42 +22,42 @@ use vector::Vector;
 
 fn options() -> Options {
     let mut opts = Options::new();
-    opts.optflag("h", "help", "Print this help information");
-    opts.optflag("v", "version", "Print version information");
+    opts.optflag("h", "help", "Print this help information.");
+    opts.optflag("v", "version", "Print version information.");
     opts.optopt(
         "",
         "view-dist",
-        "Set how far a racer can see, a positive integer",
+        "Set how far a racer can see in each cardinal direction. This is a positive integer. The default is 20. This cannot be more than display-dist.",
         "DISTANCE",
     );
     opts.optopt(
         "",
         "display-dist",
-        "Set how far away the track is displayed, a positive integer",
+        "Set how far you can see in each cardinal direction. This is a positive integer. The default is 20. This cannot be less than view-dist.",
         "DISTANCE",
     );
     opts.optopt(
         "",
         "path-radius",
-        "Set track path radius, a positive integer",
+        "Set track path radius. This is a positive integer. The default is 4.",
         "RADIUS",
     );
     opts.optopt(
         "",
         "seed",
-        "Set random seed to use, a positive integer",
+        "Set random seed to use. This is a positive integer. The default is decided randomly.",
         "SEED",
     );
     opts.optopt(
         "",
         "population",
-        "Set genome population size, a positive integer",
+        "Set genome population size. This is a positive integer. It may be rounded a bit. The default is 10.",
         "SIZE",
     );
     opts.optopt(
         "",
         "mutation",
-        "Set mutation rate, a positive decimal",
+        "Set mutation rate, a positive decimal. The default is 0.05.",
         "RATE",
     );
     opts
