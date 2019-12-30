@@ -14,6 +14,7 @@ use rayon::prelude::*;
 use rng::Rng;
 use std::env;
 use std::iter;
+use std::process;
 use std::str::FromStr;
 use std::thread;
 use std::time::{Duration, SystemTime};
@@ -61,9 +62,25 @@ fn options() -> Options {
     opts
 }
 
+fn print_help(opts: &Options) -> String {
+    let name = env::args().nth(0).unwrap_or("(anonymous)".to_string());
+    format!(
+        "{}\n\n{}\n",
+        opts.short_usage(&name),
+        opts.usage("Simulate vector racers.")
+    )
+}
+
 fn main() {
     let opts = options();
-    let matches = opts.parse(env::args()).unwrap();
+    let matches = opts.parse(env::args()).unwrap_or_else(|err| {
+        eprint!("{}\n\n{}", err, print_help(&opts));
+        process::exit(1)
+    });
+    if matches.opt_present("help") {
+        print!("{}", print_help(&opts));
+        process::exit(0);
+    }
     let view_dist = matches
         .opt_str("view-dist")
         .and_then(|arg| i32::from_str(&arg).ok());
