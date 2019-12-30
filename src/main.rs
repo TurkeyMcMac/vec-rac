@@ -82,7 +82,7 @@ fn main() {
         print!("{}", print_help(&opts));
         process::exit(0);
     } else if matches.opt_present("version") {
-        println!("vec-rac version 0.1.0");
+        println!("vec-rac version 0.2.0");
         process::exit(0);
     }
     let view_dist = matches
@@ -182,8 +182,8 @@ fn draw_track(track: &Racetrack) {
 
 fn test_brain(brain: &Brain, track: &Racetrack, show: bool) -> (i32, usize) {
     let mut track = track.clone();
-    let mut vel = Vector::new(0, 1);
     let mut time = 0usize;
+    let mut vel = Vector::ORIGIN;
     let mut pos = Vector::ORIGIN;
     let mut max_score = 0;
     let mut since_improved = 0;
