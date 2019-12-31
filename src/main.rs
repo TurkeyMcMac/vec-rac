@@ -1,17 +1,8 @@
 extern crate getopts;
 extern crate rayon;
 
-mod brain;
-mod grid;
-mod racetrack;
-mod rng;
-mod vector;
-
-use brain::Brain;
 use getopts::Options;
-use racetrack::Racetrack;
 use rayon::{prelude::*, ThreadPoolBuilder};
-use rng::Rng;
 use std::env;
 use std::iter;
 use std::process;
@@ -19,7 +10,10 @@ use std::str::FromStr;
 use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, SystemTime};
-use vector::Vector;
+use vec_rac::brain::Brain;
+use vec_rac::racetrack::Racetrack;
+use vec_rac::rng::Rng;
+use vec_rac::vector::Vector;
 
 fn options() -> Options {
     let mut opts = Options::new();
