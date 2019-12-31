@@ -9,6 +9,17 @@ artificial intelligence (a neural network). Racers improve through natural
 selection. A racer is scored primarily on how far upward it gets and secondarily
 on how long its race took.
 
+## Installation
+
+You can clone the repository and build the program with cargo, or you can
+install the binary like this:
+
+```
+cargo install vec-rac
+```
+
+I suggest the latter method.
+
 ## Running the Simulation
 
 The program makes use of all available cores to find better racers, but doing so
@@ -18,7 +29,7 @@ not implemented saving of racers, so to record your progress, you should run the
 program something like this:
 
 ```
-asciinema rec -i 1 -c 'cargo run --release ...'
+asciinema rec -i 1 -c 'vec-rac ...'
 ```
 
 Asciinema is a separate program. The above command runs the command after `-c`
