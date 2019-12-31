@@ -10,7 +10,7 @@ mod vector;
 use brain::Brain;
 use getopts::Options;
 use racetrack::Racetrack;
-use rayon::prelude::*;
+use rayon::{prelude::*, ThreadPoolBuilder};
 use rng::Rng;
 use std::env;
 use std::iter;
@@ -61,6 +61,12 @@ fn options() -> Options {
         "Set mutation rate, a positive decimal. The default is 0.05.",
         "RATE",
     );
+    opts.optopt(
+        "",
+        "testing-threads",
+        "Set the number of threads to use to continuously test AIs. This is a positive integer. The default is probably the number of cores the computer has.",
+        "COUNT",
+    );
     opts
 }
 
@@ -83,7 +89,7 @@ fn main() {
         print!("{}", print_help(&opts));
         process::exit(0);
     } else if matches.opt_present("version") {
-        println!("vec-rac version 0.3.0");
+        println!("vec-rac version 0.4.0");
         process::exit(0);
     }
     let view_dist = matches
@@ -129,6 +135,15 @@ fn main() {
         .opt_str("mutation")
         .and_then(|arg| f64::from_str(&arg).ok())
         .unwrap_or(0.05);
+    matches
+        .opt_str("testing-threads")
+        .and_then(|arg| usize::from_str(&arg).ok())
+        .map(|count| {
+            ThreadPoolBuilder::new()
+                .num_threads(count)
+                .build_global()
+                .unwrap()
+        });
     let mut rng = Rng::with_seed(seed + 17);
     let track_builder = Racetrack::builder().path_radius(path_radius).seed(seed);
     let track = track_builder.clone().view_dist(view_dist).build();
