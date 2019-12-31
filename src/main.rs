@@ -83,7 +83,7 @@ fn main() {
         print!("{}", print_help(&opts));
         process::exit(0);
     } else if matches.opt_present("version") {
-        println!("vec-rac version 0.4.0");
+        println!("vec-rac version 0.4.1");
         process::exit(0);
     }
     let view_dist = matches
@@ -98,6 +98,8 @@ fn main() {
         (None, Some(d)) => (d, d),
         (None, None) => (20, 20),
     };
+    let view_dist = i32::max(1, view_dist);
+    let display_dist = i32::max(1, display_dist);
     let path_radius = matches
         .opt_str("path-radius")
         .and_then(|arg| i32::from_str(&arg).ok())
