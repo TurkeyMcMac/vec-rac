@@ -16,6 +16,7 @@ use std::env;
 use std::iter;
 use std::process;
 use std::str::FromStr;
+use std::sync::mpsc;
 use std::thread;
 use std::time::{Duration, SystemTime};
 use vector::Vector;
@@ -82,7 +83,7 @@ fn main() {
         print!("{}", print_help(&opts));
         process::exit(0);
     } else if matches.opt_present("version") {
-        println!("vec-rac version 0.2.0");
+        println!("vec-rac version 0.3.0");
         process::exit(0);
     }
     let view_dist = matches
@@ -131,11 +132,17 @@ fn main() {
     let mut rng = Rng::with_seed(seed + 17);
     let track_builder = Racetrack::builder().path_radius(path_radius).seed(seed);
     let track = track_builder.clone().view_dist(view_dist).build();
-    let displayed_track = track_builder.view_dist(display_dist).build();
     let mut brains = iter::repeat_with(|| Brain::random(view_dist, &mut rng))
         .take(population)
         .collect::<Vec<_>>();
     let mut max_max_score = 0;
+    let (tx, rx) = mpsc::channel();
+    thread::spawn(move || {
+        let displayed_track = track_builder.view_dist(display_dist).build();
+        for brain in rx {
+            test_brain(&brain, &displayed_track, true);
+        }
+    });
     loop {
         let mut results = brains
             .par_iter()
@@ -149,7 +156,7 @@ fn main() {
         if max_score > max_max_score {
             print!("\x07");
             max_max_score = max_score;
-            test_brain(&results[0].0, &displayed_track, true);
+            tx.send(results[0].0.clone()).unwrap();
         }
         brains.clear();
         for (brain, _) in results.into_iter() {
