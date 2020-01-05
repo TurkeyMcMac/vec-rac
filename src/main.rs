@@ -83,7 +83,7 @@ fn main() {
         print!("{}", print_help(&opts));
         process::exit(0);
     } else if matches.opt_present("version") {
-        println!("vec-rac version 0.4.1");
+        println!("vec-rac version 0.4.2");
         process::exit(0);
     }
     let view_dist = matches
@@ -151,6 +151,7 @@ fn main() {
     thread::spawn(move || {
         let displayed_track = track_builder.view_dist(display_dist).build();
         for brain in rx {
+            print!("\x07");
             test_brain(&brain, &displayed_track, true);
         }
     });
@@ -165,7 +166,6 @@ fn main() {
         results.truncate(population / 2);
         let max_score = (results[0].1).0;
         if max_score > max_max_score {
-            print!("\x07");
             max_max_score = max_score;
             tx.send(results[0].0.clone()).unwrap();
         }

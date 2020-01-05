@@ -1,7 +1,7 @@
 [package]
 name = "vec-rac"
 description = "Evolving AI vector racing"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["Jude Melton-Houghton <jwmhjwmh@gmail.com>"]
 repository = "https://github.com/TurkeyMcMac/vec-rac"
 readme = "README.md"
